@@ -2,6 +2,8 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ethers";
 import { HardhatUserConfig, task } from "hardhat/config";
 
+import "./tasks";
+
 task("balance", "Prints an account's balance")
   .addParam("account", "The account's address")
   .setAction(async (taskArgs, { ethers }) => {
