@@ -19,11 +19,7 @@ describe("Token", function () {
     it("Should set right owner", async function () {
       const { hardhatToken, owner } = await loadFixture(deployTokenContract);
       expect(await hardhatToken.owner()).to.equal(owner.address);
-    });
-
-    it("Should set right supply", async function () {
-      const { hardhatToken, owner } = await loadFixture(deployTokenContract);
-      expect(await hardhatToken.balanceOf(owner.address)).to.equal(
+      expect(await hardhatToken.balanceOf(owner)).to.equal(
         await hardhatToken.totalSupply()
       );
     });

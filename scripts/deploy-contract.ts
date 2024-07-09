@@ -18,6 +18,19 @@ async function main() {
       console.log(`Deploy MyERC20 at address ${erc20.target}`);
       break;
     }
+    case "erc721": {
+      const name = process.env.NAME;
+      const symbol = process.env.SYMBOL;
+
+      if (!name || !symbol) throw new Error(`Name and symbol must not empty`);
+
+      const erc721Factory = await ethers.getContractFactory("MyNFT");
+      const deploy = await erc721Factory.deploy(name, symbol);
+      const erc721 = await deploy.waitForDeployment();
+
+      console.log(`Deploy MyERC721 at address ${erc721.target}`);
+      break;
+    }
     default: {
       throw new Error(`Kind ${process.env.KIND} is not supported`);
     }
