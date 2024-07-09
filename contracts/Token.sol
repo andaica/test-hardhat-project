@@ -22,12 +22,12 @@ contract Token {
     function transfer(address to, uint256 amount) external {
         require(balances[msg.sender] >= amount, "Not enough tokens");
 
-        console.log(
-            "Transferring from %s to %s %s tokens",
-            msg.sender,
-            to,
-            amount
-        );
+        // console.log(
+        //     "Transferring from %s to %s %s tokens",
+        //     msg.sender,
+        //     to,
+        //     amount
+        // );
 
         balances[msg.sender] -= amount;
         balances[to] += amount;
