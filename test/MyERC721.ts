@@ -11,6 +11,7 @@ describe("MyERC721", function () {
   const _INTERFACE_ID_ERC165 = "0x01ffc9a7";
   const _INTERFACE_ID_ERC721 = "0x80ac58cd";
   const _INTERFACE_ID_ERC721_METADATA = "0x5b5e139f";
+  const _ERC721_RECEIVED = "0x150b7a02";
 
   async function deployContract() {
     const [owner, addr1, addr2] = await ethers.getSigners();
@@ -50,12 +51,15 @@ describe("MyERC721", function () {
       expect(isSupport).to.equal(true);
 
       isSupport = await myCollection.supportsInterface(_INTERFACE_ID_ERC721);
-      expect(isSupport).to.equal(false);
+      expect(isSupport).to.equal(true);
 
       isSupport = await myCollection.supportsInterface(
         _INTERFACE_ID_ERC721_METADATA
       );
       expect(isSupport).to.equal(true);
+
+      isSupport = await myCollection.supportsInterface(_ERC721_RECEIVED);
+      expect(isSupport).to.equal(false);
     });
   });
 
@@ -200,6 +204,57 @@ describe("MyERC721", function () {
     });
   });
 
+  describe("SafeTransferFrom", function () {
+    it("Error if not ERC721Receiver", async function () {
+      const { myCollection, owner, addr1, addr2 } = await loadFixture(
+        deployContract
+      );
+      await myCollection.mint(owner, 0);
+
+      const erc20Factory = await ethers.getContractFactory("MyERC20");
+      const deploy = await erc20Factory.deploy("Test", "test", 18);
+      const myToken = await deploy.waitForDeployment();
+      const myTokenContract = await myToken.getAddress();
+
+      let transfer = myCollection["safeTransferFrom(address,address,uint256)"](
+        owner,
+        myTokenContract,
+        0
+      );
+      await expect(transfer).to.be.revertedWithoutReason();
+    });
+
+    it("Success if is not contract", async function () {
+      const { myCollection, owner, addr1 } = await loadFixture(deployContract);
+      await myCollection.mint(owner, 0);
+
+      await myCollection["safeTransferFrom(address,address,uint256)"](
+        owner,
+        addr1,
+        0
+      );
+      expect(await myCollection.ownerOf(0)).to.equal(addr1);
+    });
+
+    it("Success if is ERC721Receiver", async function () {
+      const { myCollection, owner } = await loadFixture(deployContract);
+      await myCollection.mint(owner, 0);
+
+      const mockERC721Receiver = await ethers.deployContract(
+        "MockERC721Receiver"
+      );
+      const myContract = await mockERC721Receiver.getAddress();
+
+      await myCollection["safeTransferFrom(address,address,uint256,bytes)"](
+        owner,
+        myContract,
+        0,
+        "0x"
+      );
+      expect(await myCollection.ownerOf(0)).to.equal(myContract);
+    });
+  });
+
   describe("Mint", function () {
     it("Error if mint to zero", async function () {
       const { myCollection } = await loadFixture(deployContract);
@@ -209,8 +264,8 @@ describe("MyERC721", function () {
 
     it("Error if already minted", async function () {
       const { myCollection, owner } = await loadFixture(deployContract);
-      await myCollection.mint(owner, 1);
-      let mint = myCollection.mint(owner, 1);
+      await myCollection.mint(owner, 10);
+      let mint = myCollection.mint(owner, 10);
       await expect(mint).to.be.revertedWith("already minted");
     });
 
@@ -231,10 +286,16 @@ describe("MyERC721", function () {
 
   describe("Burn", function () {
     it("Error if not owner", async function () {
+      const { myCollection } = await loadFixture(deployContract);
+      let burn = myCollection.burn(0);
+      await expect(burn).to.be.revertedWith("not minted");
+    });
+
+    it("Error if not authorized", async function () {
       const { myCollection, addr1 } = await loadFixture(deployContract);
       await myCollection.mint(addr1, 0);
       let burn = myCollection.burn(0);
-      await expect(burn).to.be.revertedWith("not owner");
+      await expect(burn).to.be.revertedWith("not authorized");
     });
 
     it("Should set right burn info", async function () {

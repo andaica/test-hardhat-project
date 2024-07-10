@@ -97,7 +97,7 @@ contract ERC721 is IERC721, IERC721Metadata {
     }
 
     function getApproved(uint256 id) external view returns (address) {
-        require(_ownerOf[id] != address(0), "token doesn't exist");
+        require(_exists(id), "token doesn't exist");
         return _approvals[id];
     }
 
@@ -126,6 +126,53 @@ contract ERC721 is IERC721, IERC721Metadata {
         emit Transfer(from, to, id);
     }
 
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        safeTransferFrom(from, to, tokenId, "");
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public virtual override {
+        transferFrom(from, to, tokenId);
+        require(
+            _checkOnERC721Received(from, to, tokenId, _data),
+            "transfer to non ERC721Receiver implementer"
+        );
+    }
+
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) private returns (bool) {
+        if (!isContract(to)) {
+            return true;
+        }
+
+        return (IERC721Receiver(to).onERC721Received(
+            msg.sender,
+            from,
+            tokenId,
+            _data
+        ) == IERC721Receiver.onERC721Received.selector);
+    }
+
+    function isContract(address account) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
+    }
+
     function _mint(address to, uint256 id, string memory tokenUri) internal {
         require(to != address(0), "mint to zero address");
         require(_ownerOf[id] == address(0), "already minted");
@@ -140,6 +187,7 @@ contract ERC721 is IERC721, IERC721Metadata {
     function _burn(uint256 id) internal {
         address owner = _ownerOf[id];
         require(owner != address(0), "not minted");
+        require(_isApprovedOrOwner(owner, msg.sender, id), "not authorized");
 
         _balanceOf[owner] -= 1;
 
@@ -168,7 +216,6 @@ contract MyNFT is ERC721 {
     }
 
     function burn(uint256 id) external {
-        require(msg.sender == _ownerOf[id], "not owner");
         _burn(id);
     }
 }
