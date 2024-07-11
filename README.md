@@ -9,5 +9,16 @@ npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
 npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
+```
+
+Example deploy:
+
+```shell
+KIND=erc1155 NAME="My 1155 Collection" SYMBOL=my15 npx hardhat run ./scripts/deploy-contract.ts --network bnb_testnet
+```
+
+Example verify contract:
+
+```shell
+npx hardhat verify <contract address> "My 1155 Collection" my15 --network bnb_testnet
 ```

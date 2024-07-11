@@ -24,11 +24,24 @@ async function main() {
 
       if (!name || !symbol) throw new Error(`Name and symbol must not empty`);
 
-      const erc721Factory = await ethers.getContractFactory("MyNFT");
-      const deploy = await erc721Factory.deploy(name, symbol);
-      const erc721 = await deploy.waitForDeployment();
+      const factory = await ethers.getContractFactory("MyNFT");
+      const deploy = await factory.deploy(name, symbol);
+      const myCollection = await deploy.waitForDeployment();
 
-      console.log(`Deploy MyERC721 at address ${erc721.target}`);
+      console.log(`Deploy MyERC721 at address ${myCollection.target}`);
+      break;
+    }
+    case "erc1155": {
+      const name = process.env.NAME;
+      const symbol = process.env.SYMBOL;
+
+      if (!name || !symbol) throw new Error(`Name and symbol must not empty`);
+
+      const factory = await ethers.getContractFactory("MyMultiToken");
+      const deploy = await factory.deploy(name, symbol);
+      const myCollection = await deploy.waitForDeployment();
+
+      console.log(`Deploy MyERC1155 at address ${myCollection.target}`);
       break;
     }
     default: {
