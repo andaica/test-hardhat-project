@@ -4,8 +4,10 @@ pragma solidity ^0.8.24;
 import "./interfaces/IERC20.sol";
 
 // import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MyERC20 is IERC20 {
+
+contract MyERC20 is IERC20, Ownable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(
         address indexed owner, address indexed spender, uint256 value
@@ -18,7 +20,7 @@ contract MyERC20 is IERC20 {
     string public symbol;
     uint8 public decimals;
 
-    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
+    constructor(string memory _name, string memory _symbol, uint8 _decimals) Ownable(msg.sender) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -72,11 +74,11 @@ contract MyERC20 is IERC20 {
         emit Transfer(from, address(0), amount);
     }
 
-    function mint(address to, uint256 amount) external {
+    function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }
 
-    function burn(address from, uint256 amount) external {
+    function burn(address from, uint256 amount) external onlyOwner {
         _burn(from, amount);
     }
 }

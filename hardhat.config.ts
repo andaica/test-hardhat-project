@@ -9,6 +9,7 @@ dotenv.config();
 
 const privateKey = process.env.PRIVATE_KEY!;
 const bscScanApiKey = process.env.BSCSCAN_API_KEY!;
+const polygonScanApiKey = process.env.POLYGONSCAN_API_KEY!;
 
 task("balance", "Prints an account's balance")
   .addParam("account", "The account's address")
@@ -39,6 +40,11 @@ const config: HardhatUserConfig = {
       chainId: 97,
       accounts: [privateKey],
     },
+    polygon_amoy: {
+      url: "https://rpc-amoy.polygon.technology",
+      chainId: 80002,
+      accounts: [privateKey],
+    },
   },
   etherscan: {
     apiKey: {
@@ -46,7 +52,18 @@ const config: HardhatUserConfig = {
       avax_fuji: "snowtrace", // apiKey is not required, just set a placeholder
       bscTestnet: bscScanApiKey, // obtain one at https://bscscan.com/
       bsc: bscScanApiKey, // obtain one at https://bscscan.com/
+      polygonAmoy: polygonScanApiKey, // obtain one at https://polygonscan.com/
     },
+    customChains: [
+      {
+        network: "polygonAmoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+    ],
   },
 };
 

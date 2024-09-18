@@ -154,6 +154,20 @@ describe("MyERC20", function () {
         (await myToken.balanceOf(owner)) + BigInt(100)
       );
     });
+
+    it("Should revert when non-owner tries to mint", async function () {
+      const { myToken, addr1 } = await loadFixture(deployContract);
+
+      await expect(myToken.connect(addr1).mint(addr1.address, 100))
+        .to.be.revertedWithCustomError(myToken, "OwnableUnauthorizedAccount")
+        .withArgs(addr1.address);
+
+      // Verify that the balance and total supply remain unchanged
+      expect(await myToken.balanceOf(addr1.address)).to.equal(0);
+      expect(await myToken.totalSupply()).to.equal(
+        await myToken.balanceOf(await myToken.owner())
+      );
+    });
   });
 
   describe("Burn", function () {
@@ -178,6 +192,24 @@ describe("MyERC20", function () {
 
       expect(await myToken.balanceOf(owner)).to.equal(valueAfterBurn);
       expect(await myToken.totalSupply()).to.equal(valueAfterBurn);
+    });
+
+    it("Should revert when non-owner tries to burn", async function () {
+      const { myToken, owner, addr1 } = await loadFixture(deployContract);
+
+      // Mint some tokens to addr1 first
+      await myToken.mint(addr1.address, 100);
+
+      // Attempt to burn tokens from addr1 using addr1's connection (non-owner)
+      await expect(myToken.connect(addr1).burn(addr1.address, 50))
+        .to.be.revertedWithCustomError(myToken, "OwnableUnauthorizedAccount")
+        .withArgs(addr1.address);
+
+      // Verify that the balance and total supply remain unchanged
+      expect(await myToken.balanceOf(addr1.address)).to.equal(100);
+      expect(await myToken.totalSupply()).to.equal(
+        (await myToken.balanceOf(owner)) + BigInt(100)
+      );
     });
   });
 });
