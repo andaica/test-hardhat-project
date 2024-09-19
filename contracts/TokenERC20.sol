@@ -7,7 +7,7 @@ import "./interfaces/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract MyERC20 is IERC20, Ownable {
+contract TokenERC20 is IERC20, Ownable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(
         address indexed owner, address indexed spender, uint256 value

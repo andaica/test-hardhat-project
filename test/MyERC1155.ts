@@ -302,7 +302,7 @@ describe("MyERC1155", function () {
       const { myCollection, owner } = await loadFixture(deployContract);
       await myCollection.mint(0, 100, "0x");
 
-      const erc20Factory = await ethers.getContractFactory("MyERC20");
+      const erc20Factory = await ethers.getContractFactory("TokenERC20");
       const deploy = await erc20Factory.deploy("Test", "test", 18);
       const myToken = await deploy.waitForDeployment();
       const myTokenContract = await myToken.getAddress();
@@ -433,7 +433,7 @@ describe("MyERC1155", function () {
       const { myCollection, owner } = await loadFixture(deployContract);
       await myCollection.mint(0, 100, "0x");
 
-      const erc20Factory = await ethers.getContractFactory("MyERC20");
+      const erc20Factory = await ethers.getContractFactory("TokenERC20");
       const deploy = await erc20Factory.deploy("Test", "test", 18);
       const myToken = await deploy.waitForDeployment();
       const myTokenContract = await myToken.getAddress();

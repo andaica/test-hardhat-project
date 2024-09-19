@@ -211,7 +211,7 @@ describe("MyERC721", function () {
       );
       await myCollection.mint(owner, 0);
 
-      const erc20Factory = await ethers.getContractFactory("MyERC20");
+      const erc20Factory = await ethers.getContractFactory("TokenERC20");
       const deploy = await erc20Factory.deploy("Test", "test", 18);
       const myToken = await deploy.waitForDeployment();
       const myTokenContract = await myToken.getAddress();

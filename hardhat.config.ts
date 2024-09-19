@@ -45,6 +45,11 @@ const config: HardhatUserConfig = {
       chainId: 80002,
       accounts: [privateKey],
     },
+    derachain: {
+      chainId: 20240801,
+      url: "https://rpc-testnet.derachain.com/ext/bc/2LZp9ypK4SWm3a8MBYZbxTZgKbvB4aemUf83cBp1hSnvP7SFiw/rpc",
+      accounts: [process.env.PRIVATE_KEY!],
+    },
   },
   etherscan: {
     apiKey: {
@@ -53,6 +58,7 @@ const config: HardhatUserConfig = {
       bscTestnet: bscScanApiKey, // obtain one at https://bscscan.com/
       bsc: bscScanApiKey, // obtain one at https://bscscan.com/
       polygonAmoy: polygonScanApiKey, // obtain one at https://polygonscan.com/
+      derachain: "empty",
     },
     customChains: [
       {
@@ -61,6 +67,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api-amoy.polygonscan.com/api",
           browserURL: "https://amoy.polygonscan.com",
+        },
+      },
+      {
+        network: "derachain",
+        chainId: 20240801,
+        urls: {
+          apiURL: "https://trace.derachain.com/api",
+          browserURL: "https://trace.derachain.com",
         },
       },
     ],
