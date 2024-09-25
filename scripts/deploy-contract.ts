@@ -11,11 +11,11 @@ async function main() {
 
       if (!name || !symbol) throw new Error(`Name and symbol must not empty`);
 
-      const erc20Factory = await ethers.getContractFactory("TokenERC20");
+      const erc20Factory = await ethers.getContractFactory("ERC20");
       const deploy = await erc20Factory.deploy(name, symbol, decimals);
       const erc20 = await deploy.waitForDeployment();
 
-      console.log(`Deploy TokenERC20 at address ${erc20.target}`);
+      console.log(`Deploy ERC20 at address ${erc20.target}`);
       break;
     }
     case "erc721": {

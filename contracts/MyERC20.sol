@@ -1,18 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "./interfaces/IERC20.sol";
-
-// import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract TokenERC20 is IERC20, Ownable {
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(
-        address indexed owner, address indexed spender, uint256 value
-    );
-
+contract ERC20 is IERC20, Ownable {
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
@@ -81,4 +74,8 @@ contract TokenERC20 is IERC20, Ownable {
     function burn(address from, uint256 amount) external onlyOwner {
         _burn(from, amount);
     }
+}
+
+contract MyToken is ERC20 {
+    constructor() ERC20("My Token", "myto", 18) {}
 }

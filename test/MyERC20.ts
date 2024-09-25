@@ -2,7 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("TokenERC20", function () {
+describe("MyERC20", function () {
   const TokenName = "My Token";
   const TokenSymbol = "myto";
   const TokenDecimals = 18;
@@ -10,7 +10,7 @@ describe("TokenERC20", function () {
   async function deployContract() {
     const [owner, addr1, addr2] = await ethers.getSigners();
 
-    const erc20Factory = await ethers.getContractFactory("TokenERC20");
+    const erc20Factory = await ethers.getContractFactory("ERC20");
     const deploy = await erc20Factory.deploy(
       TokenName,
       TokenSymbol,
@@ -210,6 +210,18 @@ describe("TokenERC20", function () {
       expect(await myToken.totalSupply()).to.equal(
         (await myToken.balanceOf(owner)) + BigInt(100)
       );
+    });
+  });
+
+  describe("MyToken", function () {
+    it("Deploy contract MyToken", async function () {
+      const myTokenFactory = await ethers.getContractFactory("MyToken");
+      const deploy = await myTokenFactory.deploy();
+      const myToken = await deploy.waitForDeployment();
+
+      expect(await myToken.name()).to.equal("My Token");
+      expect(await myToken.symbol()).to.equal("myto");
+      expect(await myToken.decimals()).to.equal(18);
     });
   });
 });

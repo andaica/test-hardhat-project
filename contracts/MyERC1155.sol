@@ -1,30 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "./interfaces/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/IERC1155MetadataURI.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 contract ERC1155 is IERC1155, IERC1155MetadataURI {
-    event TransferSingle(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256 id,
-        uint256 value
-    );
-    event TransferBatch(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256[] ids,
-        uint256[] values
-    );
-    event ApprovalForAll(
-        address indexed owner,
-        address indexed operator,
-        bool approved
-    );
-    event URI(string value, uint256 indexed id);
-
     // owner => id => balance
     mapping(address => mapping(uint256 => uint256)) public balanceOf;
     // owner => operator => approved
@@ -70,13 +51,13 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
 
         if (to.code.length > 0) {
             require(
-                IERC1155TokenReceiver(to).onERC1155Received(
+                IERC1155Receiver(to).onERC1155Received(
                     msg.sender,
                     from,
                     id,
                     value,
                     data
-                ) == IERC1155TokenReceiver.onERC1155Received.selector,
+                ) == IERC1155Receiver.onERC1155Received.selector,
                 "unsafe transfer"
             );
         }
@@ -105,13 +86,13 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
 
         if (to.code.length > 0) {
             require(
-                IERC1155TokenReceiver(to).onERC1155BatchReceived(
+                IERC1155Receiver(to).onERC1155BatchReceived(
                     msg.sender,
                     from,
                     ids,
                     values,
                     data
-                ) == IERC1155TokenReceiver.onERC1155BatchReceived.selector,
+                ) == IERC1155Receiver.onERC1155BatchReceived.selector,
                 "unsafe transfer"
             );
         }
@@ -145,13 +126,13 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
 
         if (to.code.length > 0) {
             require(
-                IERC1155TokenReceiver(to).onERC1155Received(
+                IERC1155Receiver(to).onERC1155Received(
                     msg.sender,
                     address(0),
                     id,
                     value,
                     data
-                ) == IERC1155TokenReceiver.onERC1155Received.selector,
+                ) == IERC1155Receiver.onERC1155Received.selector,
                 "unsafe transfer"
             );
         }
@@ -174,13 +155,13 @@ contract ERC1155 is IERC1155, IERC1155MetadataURI {
 
         if (to.code.length > 0) {
             require(
-                IERC1155TokenReceiver(to).onERC1155BatchReceived(
+                IERC1155Receiver(to).onERC1155BatchReceived(
                     msg.sender,
                     address(0),
                     ids,
                     values,
                     data
-                ) == IERC1155TokenReceiver.onERC1155BatchReceived.selector,
+                ) == IERC1155Receiver.onERC1155BatchReceived.selector,
                 "unsafe transfer"
             );
         }
